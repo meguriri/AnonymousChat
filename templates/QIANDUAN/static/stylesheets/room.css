@@ -1,0 +1,12 @@
+
+li {
+    float:right;
+}
+a:link,a:visited {
+    display:block;
+    width:120px;
+    font-weight:bold;
+    color:#FFFFFF;
+    text-align:left;
+    padding:4px;
+}

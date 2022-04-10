@@ -1,0 +1,70 @@
+
+/*                                                                  全局                      */
+
+.login .select_portrait img,
+.header .userinfo .select_portrait img{
+	width: 18px;
+	height: 18px;
+	opacity: .5;
+	cursor: pointer;
+}
+.login .select_portrait .t,
+.header .userinfo .select_portrait .t{
+	opacity: 1;
+}
+.login .select_portrait img:hover,
+.header .userinfo .select_portrait img:hover{
+	opacity: 1;
+}
+
+/*  -------------------------------------------------------login------------------------------- */
+
+.login .jumbotron{
+	background: none;
+	text-align: center;
+}
+
+
+
+.login .input-group{
+	margin: 30px auto;
+	max-width: 300px;
+}
+
+.login .input-group input{
+	margin: 10px auto;
+}
+
+.login input:hover{
+	background-color: #fff;
+	box-shadow: none;
+}
+.login .input-group .btn{
+	border-left: none;
+}
+.login .input-group .btn:hover{
+	background-color: #fff;
+	box-shadow: none;
+	border-color: #ccc;
+}
+.login .footer{
+	font-size: 20px;
+	position: fixed;
+	z-index: 8888;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 35px;
+	line-height: 35px;
+	text-align: center;
+	color: #eee;
+	background-color: rgba(0,0,0,.3);
+}
+
+
+.login .footer span{
+	color: #f00;
+}
+
+
+

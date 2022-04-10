@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>go-gin-chat 聊天室</title>
+    <link rel="stylesheet" href="//cdn.staticfile.org/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/stylesheets/style.css">
+    <link rel="shortcut icon" href="/static/favicon.ico" type="image/x-icon" />
+    <script type="text/javascript" src="//cdn.staticfile.org/jquery/1.11.2/jquery.min.js"></script>
+</head>
+<body class="login">
+<style type="text/css">
+    body{
+        background: url("../static/images/login_bg.jpg") no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+    }
+</style>
+<div class="scrollbar-macosx">
+    <div class="main container ">
+        <div class="jumbotron">
+            <h3>欢迎来到聊天室，请先输入昵称</h3>
+            <p class="user_portrait">
+                <img portrait_id="1" src="/static/images/user/1.png" alt="portrait_1">
+            </p>
+            <p class="select_portrait">
+                <img portrait_id="1" src="/static/images/user/1.png" alt="portrait_1" class="t">
+                <img portrait_id="2" src="/static/images/user/2.png" alt="portrait_1">
+                <img portrait_id="3" src="/static/images/user/3.png" alt="portrait_1">
+                <img portrait_id="4" src="/static/images/user/4.png" alt="portrait_1">
+                <img portrait_id="5" src="/static/images/user/5.png" alt="portrait_1">
+                <img portrait_id="6" src="/static/images/user/6.png" alt="portrait_1">
+                <img portrait_id="7" src="/static/images/user/7.png" alt="portrait_1">
+                <img portrait_id="8" src="/static/images/user/8.png" alt="portrait_1">
+                <img portrait_id="9" src="/static/images/user/9.png" alt="portrait_1">
+                <img portrait_id="10" src="/static/images/user/10.png" alt="portrait_1">
+                <img portrait_id="11" src="/static/images/user/11.png" alt="portrait_1">
+                <img portrait_id="12" src="/static/images/user/12.png" alt="portrait_1">
+            </p>
+
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="输入你的昵称，不少于两位" required>
+                <button class="btn btn-default" type="submit">
+                    <span class="">进入聊天室</span>
+                </button>
+            </div>
+        </div>
+        <div class="footer">
+            <span>{{ .OnlineUserCount }}</span> 人在线热聊中！
+        </div>
+    </div>
+</div>
+</body>
+<script>
+
+    $(document).ready(function() {
+
+        $('.select_portrait img').hover(function () {
+            var portrait_id = $(this).attr('portrait_id');
+            $('.user_portrait img').attr('src', '/static/images/user/' + portrait_id + '.png');
+        }, function () {
+            var t_id = $('.user_portrait img').attr('portrait_id');
+            $('.user_portrait img').attr('src', '/static/images/user/' + t_id + '.png');
+        });
+        $('.select_portrait img').click(function (event) {
+            var portrait_id = $(this).attr('portrait_id');
+            $('.user_portrait img').attr('portrait_id', portrait_id);
+            $('.select_portrait img').removeClass('t');
+            $(this).addClass('t');
+        });
+    });
+</script>
+</html>
