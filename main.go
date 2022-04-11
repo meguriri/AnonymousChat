@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/meguriri/AnonymousChat/config"
 	"github.com/meguriri/AnonymousChat/dao"
 	"github.com/meguriri/AnonymousChat/redis"
-	"net/http"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 	r := gin.Default()
 	r.Static("/static", "./static/")
 	r.LoadHTMLGlob("templates/*")
+
 	r.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", nil)
 		sid, err := c.Cookie("login")
@@ -35,6 +37,7 @@ func main() {
 			fmt.Println(sname)
 		}
 	})
+
 	r.POST("/login", func(c *gin.Context) {
 		name := c.PostForm("name")
 		fmt.Println(name)
@@ -58,14 +61,15 @@ func main() {
 	})
 	r.Run(":5050")
 
-	var s dao.Session
-	sid, err1 := s.Set("fuck", 1e10)
-	if err1 != nil {
-		panic(err1)
-	}
-	sname, _ := s.Get(sid)
-	fmt.Println(sname)
-	//s.Del(sid)
-	sname, err = s.Get(sid)
-	fmt.Println(sname)
+	// var s dao.Session
+	// sid, err1 := s.Set("fuck", 1e10)
+	// if err1 != nil {
+	// 	panic(err1)
+	// }
+	// sname, _ := s.Get(sid)
+	// fmt.Println(sname)
+	// //s.Del(sid)
+	// sname, err = s.Get(sid)
+	// fmt.Println(sname)
+
 }

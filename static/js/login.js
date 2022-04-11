@@ -9,6 +9,7 @@ $(document).ready(function () {
             data: {name: a},//序列化表单值
             success: function (res) {
                 console.log(res.msg)
+                //window.location.href="/room"
             }
         })
     })
