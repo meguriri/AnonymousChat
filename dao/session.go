@@ -9,13 +9,10 @@ import (
 	"time"
 )
 
-type Manager interface {
-	Get(sid string) (string, error)
-	Set(sname string) (string, error)
-	Del(sid string) error
-}
+var MaxLifetime int64
 
 type Session struct {
+	Message string
 	MaxLifetime int64
 }
 
@@ -27,23 +24,22 @@ func generateRandomString() string {
 	return base64.URLEncoding.EncodeToString(b)
 }
 
-func (T *Session) Set(sname string, maxlife int64) (string, error) {
-	T.MaxLifetime = maxlife
+func (T *Session) Set() (string, error) {
 	sid := generateRandomString()
 	fmt.Println("set sid: ", sid)
-	err := redis.Rdb.Set(sid, sname, time.Duration(T.MaxLifetime)).Err()
+	err := redis.Rdb.Set(sid, T.Message, time.Duration(T.MaxLifetime)).Err()
 	if err != nil {
 		return "", err
 	}
 	return sid, nil
 }
 
-func (T *Session) Get(sid string) (string, error) {
-	sname, err := redis.Rdb.Get(sid).Result()
+func Get(sid string) (string, error) {
+	session, err := redis.Rdb.Get(sid).Result()
 	if err != nil {
 		return "", err
 	}
-	return sname, err
+	return session, err
 }
 
 func (T *Session) Del(sid string) error {
@@ -54,11 +50,15 @@ func (T *Session) Del(sid string) error {
 	return nil
 }
 
-//func  CheckSession(sid string)error{
-//	var newSession Session
-//	_,err:=newSession.Get(sid)
-//	if err !=nil{
-//		newSession.Set()
-//		return nil
-//	}
+func Exist(sid string) bool{
+	fmt.Println("checking ",sid)
+	ok,_:=redis.Rdb.Exists(sid).Result()
+	if ok==1{
+		return true
+	}
+	return false
+}
+
+//func GetAllSession()(int,error){
+//
 //}

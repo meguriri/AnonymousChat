@@ -16,3 +16,8 @@ type Message struct {
 	//发送时间
 	//内容
 }
+
+var (
+	MaxUser int
+
+)

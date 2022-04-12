@@ -12,7 +12,6 @@ $(document).ready(function () {
             success: function (res) {
                 console.log(res.onlineusers)
                 $('#onlineusers').text(String(res.onlineusers))
-                //window.location.href="/room"
             }
         })
     })
@@ -35,7 +34,7 @@ $(document).ready(function () {
             data: json,
             success: function (res) {
                 console.log(res.msg)
-                //window.location.href="/room"
+                window.location.replace("/chatroom/")
             }
         })
     })

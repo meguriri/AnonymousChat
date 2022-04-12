@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+
 	err := config.Configinit()
 	if err != nil {
 		fmt.Println("viper err:", err.Error())
@@ -16,16 +17,5 @@ func main() {
 		fmt.Println(err.Error())
 	}
 	r := router.InitRouter()
-	r.Run(":5050")
-	// var s dao.Session
-	// sid, err1 := s.Set("fuck", 1e10)
-	// if err1 != nil {
-	// 	panic(err1)
-	// }
-	// sname, _ := s.Get(sid)
-	// fmt.Println(sname)
-	// //s.Del(sid)
-	// sname, err = s.Get(sid)
-	// fmt.Println(sname)
-
+	r.Run(router.HostAddress+":"+router.Port)
 }
