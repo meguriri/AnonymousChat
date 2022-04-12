@@ -2,3 +2,12 @@ redis:
   address: localhost:6379
   password:
   DB: 0
+
+server:
+  router:
+    hostaddress: 127.0.0.1
+    port: 5050
+  maxuser: 1000
+
+session:
+  maxlifetime: 100000000000
