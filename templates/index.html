@@ -24,14 +24,40 @@
             <div class="spinner-grow-sm spinner-grow text-primary text-opacity-75"></div>
             <div class="spinner-grow-sm spinner-grow text-primary "></div>
         </div>
-        <div class="p-3 shadow-lg col-6 offset-3" style="height: 300px; border-radius: 10px; background-color: rgba(255,255,255,0.5);">
-            <form>
-                <div class="m-3" >
-                  <label for="nicknameinput" class=" form-label text-danger text-opacity-75" style="letter-spacing: 10px; font-weight: bold;font-size: 25px;">输入昵称(请不要使用真名💗💗)</label>
-                  <input placeholder="输入不超过10位的昵称"  id="user" type="text" class="my-4 form-control" id="nicknameinput">
+        <div class="p-3 shadow-lg col-md-6 offset-3" style=" border-radius: 10px; background-color: rgba(255,255,255,0.5);">
+            <label for="nicknameinput" class="text-danger text-opacity-75" style="letter-spacing: 10px; font-weight: bold;font-size: 25px;">选择你的头像颜色👨</label>
+            <div class="row">
+                <div class="shadow mx-4 col-4" id="123" style="border-radius: 10px;width: 150px;height: 100px; margin-bottom: 20px;"></div>
+                <div class="col-6">
+                    <input class="form-range" id="c1" type="range" min="0" max="255" step="1"/>
+                    <input class="form-range" id="c2" type="range" min="0" max="255" step="1"/>
+                    <input class="form-range" id="c3" type="range" min="0" max="255" step="1"/>
                 </div>
-                <button id="enter" type="submit" class="my-3 text-white btn btn-info" style="background-color: rgb(71, 178, 239);font-weight: bold;">确认</button>
-            </form>
+                <div class="col-2">
+                    <button id="submitcolor" class="my-3 text-white btn btn-danger" style="background-color: rgb(237, 146, 146);font-weight: bold;">确认</button>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <label for="nicknameinput" class="text-danger text-opacity-75" style="letter-spacing: 10px; font-weight: bold;font-size: 25px;">&nbsp&nbsp输入昵称,性别(请不要使用真名💗💗)</label>
+                <div class="mt-1 col-8 offset-1">
+                    <input placeholder="输入不超过10位的昵称" type="text" class="form-control " id="nicknameinput" >
+                </div>
+                <button id="submit" type="submit" class="col-2 text-white btn btn-info" style="background-color: rgb(71, 178, 239);font-weight: bold;">确认</button>
+            </div>
+            <div class="mt-2">
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" value=0>
+                    <label class="form-check-label" >
+                        ♂️
+                    </label>
+                </div>
+                <div class="form-check-inline">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" value=1>
+                    <label class="form-check-label">
+                        ♀️
+                    </label>
+                </div>
+            </div>
         </div>
         <footer class=" navbar-static-bottom">
             <h4 class="mt-5 text-white" >当前在线人数：<span id="onlineusers"></span></h4>
