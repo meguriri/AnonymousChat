@@ -24,17 +24,17 @@
             <div class="spinner-grow-sm spinner-grow text-primary text-opacity-75"></div>
             <div class="spinner-grow-sm spinner-grow text-primary "></div>
         </div>
-        <div class="p-3 shadow-lg col-6 offset-3" style="height: 300px; border-radius: 10px; background-color: white;">
+        <div class="p-3 shadow-lg col-6 offset-3" style="height: 300px; border-radius: 10px; background-color: rgba(255,255,255,0.5);">
             <form>
                 <div class="m-3" >
                   <label for="nicknameinput" class=" form-label text-danger text-opacity-75" style="letter-spacing: 10px; font-weight: bold;font-size: 25px;">输入昵称(请不要使用真名💗💗)</label>
-                  <input  id="user" type="text" class="my-4 form-control" id="nicknameinput">
+                  <input placeholder="输入不超过10位的昵称"  id="user" type="text" class="my-4 form-control" id="nicknameinput">
                 </div>
                 <button id="enter" type="submit" class="my-3 text-white btn btn-info" style="background-color: rgb(71, 178, 239);font-weight: bold;">确认</button>
             </form>
         </div>
         <footer class=" navbar-static-bottom">
-            <h4 class="mt-5 text-white" >当前在线人数：<span>0 </span></h4>
+            <h4 class="mt-5 text-white" >当前在线人数：<span id="onlineusers"></span></h4>
             <p class=" text-white">&copy; meguriri,LYT 2022.4</p>
          </footer>
     </main>
