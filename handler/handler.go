@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 	"github.com/meguriri/AnonymousChat/dao"
 	"net/http"
 )
+
 var (
 	NowUser int
 )
@@ -17,10 +19,10 @@ func GetIndex(c *gin.Context) {
 		fmt.Println("no cookie")
 		c.HTML(http.StatusOK, "index.html", nil)
 	} else {
-		ok:= dao.Exist(sid)
-		if ok{
+		ok := dao.Exist(sid)
+		if ok {
 			c.Redirect(http.StatusFound, "/chatroom")
-		}else{
+		} else {
 			c.HTML(http.StatusOK, "index.html", nil)
 		}
 	}
@@ -35,8 +37,8 @@ func GetOnlineUsers(c *gin.Context) {
 func Login(c *gin.Context) {
 	var user dao.User
 	c.ShouldBindJSON(&user)
-	s,_ := json.Marshal(user)
-	session:= dao.Session{Message: string(s), MaxLifetime: dao.MaxLifetime}
+	s, _ := json.Marshal(user)
+	session := dao.Session{Message: string(s), MaxLifetime: dao.MaxLifetime}
 	sid, err := session.Set()
 	if err != nil {
 		panic(err)
@@ -48,6 +50,14 @@ func Login(c *gin.Context) {
 	})
 }
 
-func GetChatroom(c *gin.Context){
-	c.HTML(http.StatusOK,"chatroom.html",nil)
+func GetChatroom(c *gin.Context) {
+	c.HTML(http.StatusOK, "chatroom.html", nil)
+}
+
+func GetUserList(c *gin.Context) {
+	var upgrader = websocket.Upgrader{}
+	var conn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
+	go func(conn *websocket.Conn) {
+		conn.WriteMessage(1, []byte("hahahahaahha"))
+	}(conn)
 }
