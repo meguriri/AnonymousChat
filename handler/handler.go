@@ -58,6 +58,10 @@ func GetUserList(c *gin.Context) {
 	var upgrader = websocket.Upgrader{}
 	var conn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
 	go func(conn *websocket.Conn) {
-		conn.WriteMessage(1, []byte("hahahahaahha"))
+		u := []dao.User{
+			{Nickname: "wawa", Gender: 0, Color: [3]uint{240, 200, 210}},
+			{Nickname: "mama", Gender: 1, Color: [3]uint{100, 230, 210}},
+		}
+		conn.WriteJSON(u)
 	}(conn)
 }
