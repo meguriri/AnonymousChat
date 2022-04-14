@@ -7,7 +7,7 @@ import (
 
 var (
 	HostAddress string
-	Port  string
+	Port        string
 )
 
 func InitRouter() *gin.Engine {
@@ -18,9 +18,10 @@ func InitRouter() *gin.Engine {
 	r.GET("/", h.GetIndex)
 	r.GET("/onlineusers", h.GetOnlineUsers)
 	r.POST("/login", h.Login)
-	chatroom:=r.Group("/chatroom")
+	chatroom := r.Group("/chatroom")
 	{
-		chatroom.GET("/",h.GetChatroom)
+		chatroom.GET("/", h.GetChatroom)
+		chatroom.GET("/userlist", h.GetUserList)
 	}
 	return r
 }
