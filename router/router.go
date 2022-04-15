@@ -21,6 +21,7 @@ func InitRouter() *gin.Engine {
 	chatroom := r.Group("/chatroom")
 	{
 		chatroom.GET("/", h.GetChatroom)
+		chatroom.GET("/offline", h.Offline())
 		chatroom.GET("/userlist", h.GetUserList)
 	}
 	return r

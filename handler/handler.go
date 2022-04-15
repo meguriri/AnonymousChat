@@ -65,3 +65,18 @@ func GetUserList(c *gin.Context) {
 		conn.WriteJSON(u)
 	}(conn)
 }
+
+func Offline() func(*gin.Context) {
+	return func(c *gin.Context) {
+		NowUser--
+		sid, _ := c.Cookie("login")
+		fmt.Println("cookie: ", sid)
+		if err := dao.Del(sid); err != nil {
+			fmt.Println(err)
+		}
+		c.SetCookie("login", "", -1, "/", "localhost", false, false)
+		c.JSON(http.StatusOK, gin.H{
+			"msg": "ok",
+		})
+	}
+}
