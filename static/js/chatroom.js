@@ -28,6 +28,18 @@ $(document).ready(function () {
         }
     }
 
+    $('#offline').click(function (){
+        $.ajax({
+            type: 'get',
+            url: '/chatroom/offline',
+            success: function (res) {
+                console.log(res.msg)
+                listWs.close(1000,"closed")
+                window.location.replace("/")
+            }
+        })
+    })
+
     $('#erase').click(function (){
         console.log("empty")
         $("#text").val("");

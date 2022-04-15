@@ -12,7 +12,7 @@ import (
 var MaxLifetime int64
 
 type Session struct {
-	Message string
+	Message     string
 	MaxLifetime int64
 }
 
@@ -42,7 +42,7 @@ func Get(sid string) (string, error) {
 	return session, err
 }
 
-func (T *Session) Del(sid string) error {
+func Del(sid string) error {
 	err := redis.Rdb.Del(sid).Err()
 	if err != nil {
 		return err
@@ -50,10 +50,10 @@ func (T *Session) Del(sid string) error {
 	return nil
 }
 
-func Exist(sid string) bool{
-	fmt.Println("checking ",sid)
-	ok,_:=redis.Rdb.Exists(sid).Result()
-	if ok==1{
+func Exist(sid string) bool {
+	fmt.Println("checking ", sid)
+	ok, _ := redis.Rdb.Exists(sid).Result()
+	if ok == 1 {
 		return true
 	}
 	return false
