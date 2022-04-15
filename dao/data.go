@@ -9,6 +9,8 @@ type User struct {
 	Color [3]uint `json:"color"`
 }
 
+var UserList []User
+
 type Message struct {
 	//头像颜色
 	//性别
@@ -19,5 +21,4 @@ type Message struct {
 
 var (
 	MaxUser int
-
 )
