@@ -79,7 +79,7 @@ func Offline() func(*gin.Context) {
 	return func(c *gin.Context) {
 		NowUser--
 		sid, _ := c.Cookie("login")
-		delete(dao.Users, sid)
+		delete(dao.Users, sid) //
 		dao.UserList = make([]dao.User, 0, len(dao.Users))
 		for _, user := range dao.Users {
 			dao.UserList = append(dao.UserList, *user)

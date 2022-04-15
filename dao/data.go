@@ -9,7 +9,7 @@ type User struct {
 	Color [3]uint `json:"color"`
 }
 
-var Users map[string]*User
+var Users map[string]*User //
 
 var UserList = make([]User, 0, len(Users))
 
