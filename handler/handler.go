@@ -38,10 +38,14 @@ func GetOnlineUsers(c *gin.Context) {
 func Login(c *gin.Context) {
 	var user dao.User
 	c.ShouldBindJSON(&user)
-	dao.UserList = append(dao.UserList, user)
 	s, _ := json.Marshal(user)
 	session := dao.Session{Message: string(s), MaxLifetime: dao.MaxLifetime}
 	sid, err := session.Set()
+
+	//添加用户至dao.Users
+	dao.Users = make(map[string]*(dao.User))
+	dao.Users[sid] = &user
+
 	if err != nil {
 		panic(err)
 	}
@@ -64,6 +68,13 @@ func GetUserList(c *gin.Context) {
 		//	{Nickname: "wawa", Gender: 0, Color: [3]uint{240, 200, 210}},
 		//	{Nickname: "mama", Gender: 1, Color: [3]uint{100, 230, 210}},
 		//}
+		for _, user := range dao.Users {
+			dao.UserList = append(dao.UserList, *user)
+		}
+		fmt.Println("----", dao.UserList)
+		//for s, _ := range dao.Users {
+		//	dao.UserList = append(dao.UserList, *(dao.Users[s]))
+		//}
 		for {
 			conn.WriteJSON(dao.UserList)
 			time.Sleep(time.Second * 3)
@@ -76,6 +87,11 @@ func Offline() func(*gin.Context) {
 	return func(c *gin.Context) {
 		NowUser--
 		sid, _ := c.Cookie("login")
+		delete(dao.Users, sid) //下线，删除dao.Users
+		dao.UserList = make([]dao.User, 0, len(dao.Users))
+		for _, user := range dao.Users {
+			dao.UserList = append(dao.UserList, *user)
+		}
 		fmt.Println("cookie: ", sid)
 		if err := dao.Del(sid); err != nil {
 			fmt.Println(err)

@@ -9,7 +9,9 @@ type User struct {
 	Color [3]uint `json:"color"`
 }
 
-var UserList []User
+var Users map[string]*User //string存储SessionID
+
+var UserList = make([]User, 0, len(Users))
 
 type Message struct {
 	//头像颜色
