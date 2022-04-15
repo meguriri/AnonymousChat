@@ -9,6 +9,7 @@ $(document).ready(function () {
         let user=JSON.parse(e.data)
         console.log(user)
         let c
+        $('#listinfo').html("")
         for(i=0;i<user.length;i++){
             console.log(user[i])
             if(user[i].gender==0){

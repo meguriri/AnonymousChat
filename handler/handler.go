@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/meguriri/AnonymousChat/dao"
 	"net/http"
+	"time"
 )
 
 var (
@@ -37,6 +38,7 @@ func GetOnlineUsers(c *gin.Context) {
 func Login(c *gin.Context) {
 	var user dao.User
 	c.ShouldBindJSON(&user)
+	dao.UserList = append(dao.UserList, user)
 	s, _ := json.Marshal(user)
 	session := dao.Session{Message: string(s), MaxLifetime: dao.MaxLifetime}
 	sid, err := session.Set()
@@ -58,11 +60,15 @@ func GetUserList(c *gin.Context) {
 	var upgrader = websocket.Upgrader{}
 	var conn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
 	go func(conn *websocket.Conn) {
-		u := []dao.User{
-			{Nickname: "wawa", Gender: 0, Color: [3]uint{240, 200, 210}},
-			{Nickname: "mama", Gender: 1, Color: [3]uint{100, 230, 210}},
+		//u := []dao.User{
+		//	{Nickname: "wawa", Gender: 0, Color: [3]uint{240, 200, 210}},
+		//	{Nickname: "mama", Gender: 1, Color: [3]uint{100, 230, 210}},
+		//}
+		for {
+			conn.WriteJSON(dao.UserList)
+			time.Sleep(time.Second * 3)
 		}
-		conn.WriteJSON(u)
+
 	}(conn)
 }
 
