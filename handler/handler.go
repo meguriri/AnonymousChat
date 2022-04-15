@@ -64,17 +64,9 @@ func GetUserList(c *gin.Context) {
 	var upgrader = websocket.Upgrader{}
 	var conn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
 	go func(conn *websocket.Conn) {
-		//u := []dao.User{
-		//	{Nickname: "wawa", Gender: 0, Color: [3]uint{240, 200, 210}},
-		//	{Nickname: "mama", Gender: 1, Color: [3]uint{100, 230, 210}},
-		//}
 		for _, user := range dao.Users {
 			dao.UserList = append(dao.UserList, *user)
 		}
-		fmt.Println("----", dao.UserList)
-		//for s, _ := range dao.Users {
-		//	dao.UserList = append(dao.UserList, *(dao.Users[s]))
-		//}
 		for {
 			conn.WriteJSON(dao.UserList)
 			time.Sleep(time.Second * 3)
@@ -87,7 +79,7 @@ func Offline() func(*gin.Context) {
 	return func(c *gin.Context) {
 		NowUser--
 		sid, _ := c.Cookie("login")
-		delete(dao.Users, sid) //下线，删除dao.Users
+		delete(dao.Users, sid)
 		dao.UserList = make([]dao.User, 0, len(dao.Users))
 		for _, user := range dao.Users {
 			dao.UserList = append(dao.UserList, *user)
