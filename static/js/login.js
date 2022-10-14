@@ -1,10 +1,14 @@
 $(document).ready(function () {
+
+    //用户头像颜色
     $('#submitcolor').click(function(){
         let c1=$('#c1').val()
         let c2=$('#c2').val()
         let c3=$('#c3').val()
         $('#123').css("background-color", "rgb("+String(c1)+","+String(c2)+","+String(c3)+")")
     })
+
+    //
     $('#onlineusers').each(function (){
         $.ajax({
             type: 'get',
@@ -15,6 +19,8 @@ $(document).ready(function () {
             }
         })
     })
+
+
     $('#submit').click(function (){
         console.log("click..")
         let user ={

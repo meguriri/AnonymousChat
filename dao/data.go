@@ -1,5 +1,9 @@
 package dao
 
+var (
+	MaxUser int
+)
+
 type User struct {
 	//用户昵称
 	Nickname string `json:"nickname"`
@@ -9,16 +13,15 @@ type User struct {
 	Color [3]uint `json:"color"`
 }
 
-var UserList []User
-
 type Message struct {
-	//头像颜色
-	//性别
-	//昵称
+	//发送用户
+	SendUser User
 	//发送时间
+	SendTime string `json:"sendtime"`
 	//内容
+	Content string `json:"content"`
 }
 
-var (
-	MaxUser int
-)
+var UserList []User
+
+var BroadcastChan = make(chan Message, 10000)

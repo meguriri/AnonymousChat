@@ -1,7 +1,21 @@
+function getcurTime() {
+    var Digital=new Date();
+    var hours=Digital.getHours();
+    var minutes=Digital.getMinutes();
+    var seconds=Digital.getSeconds();
+    if(minutes<=9){
+        minutes="0"+minutes;
+    }if(seconds<=9){
+        seconds="0"+seconds;
+    }
+    myclock=hours+":"+minutes+":"+seconds;
+    return myclock;
+}
+
 $(document).ready(function () {
     listWs = new WebSocket("ws://localhost:5050/chatroom/userlist")
     listWs.onopen=function(){
-        console.log("connected");
+        console.log("userlist connected");
     }
 
 
@@ -28,6 +42,31 @@ $(document).ready(function () {
         }
     }
 
+    RevWs = new WebSocket("ws://localhost:5050/chatroom/recive")
+    RevWs.onopen=function(){
+        console.log("Recive connected");
+    }
+    RevWs.onmessage = function(e){
+        console.log("get message: "+e.data)
+    }
+
+    $('#submit').click(function (){
+        let message={
+            "sendtime":getcurTime(),
+            "content":$('#text').val()
+        }
+        console.log(message)
+        $.ajax({
+            type: 'post',
+            dataType:'json',
+            data:message,
+            url: '/chatroom/send',
+                success: function (res) {
+                $('#send').append("<p>"+message.sendtime+" "+message.content+"</p>")
+                console.log(res.msg)
+            }
+        })
+    })
     $('#offline').click(function (){
         $.ajax({
             type: 'get',
