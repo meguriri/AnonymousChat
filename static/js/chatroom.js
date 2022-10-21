@@ -1,3 +1,4 @@
+//获取当前时间
 function getcurTime() {
     var Digital=new Date();
     var hours=Digital.getHours();
@@ -13,16 +14,20 @@ function getcurTime() {
 }
 
 $(document).ready(function () {
+
+    //创建用户列表的websocket连接
     listWs = new WebSocket("ws://localhost:5050/chatroom/userlist")
+
+    //用户列表的websocket建立连接时
     listWs.onopen=function(){
         console.log("userlist connected");
     }
 
-
+    //用户列表的websocket收到消息时
     listWs.onmessage = function(e){
         let user=JSON.parse(e.data)
-        console.log(user)
         let c
+
         $('#listinfo').html("")
         for(i=0;i<user.length;i++){
             console.log(user[i])
@@ -42,18 +47,35 @@ $(document).ready(function () {
         }
     }
 
-    RevWs = new WebSocket("ws://localhost:5050/chatroom/recive")
-    RevWs.onopen=function(){
-        console.log("Recive connected");
+    //用户列表的websocket关闭时
+    listWs.onclose=function (){
+        console.log("userlist disconnected")
     }
+
+    //创建消息的websocket连接
+    RevWs = new WebSocket("ws://localhost:5050/chatroom/recive")
+
+    //消息的websocket建立连接时
+    RevWs.onopen=function(){
+        console.log("Receive connected");
+    }
+
+    //消息的websocket收到消息时
     RevWs.onmessage = function(e){
         console.log("get message: "+e.data)
     }
 
+    //消息的websocket关闭时
+    RevWs.onclose=function (){
+        console.log("Receive disconnected");
+    }
+
+    //发送信息
     $('#submit').click(function (){
+        //创造message实例
         let message={
-            "sendtime":getcurTime(),
-            "content":$('#text').val()
+            "sendtime":getcurTime(),//发送时间
+            "content":$('#text').val()//内容
         }
         console.log(message)
         $.ajax({
@@ -67,20 +89,26 @@ $(document).ready(function () {
             }
         })
     })
+
+    //下线
     $('#offline').click(function (){
         $.ajax({
             type: 'get',
             url: '/chatroom/offline',
             success: function (res) {
                 console.log(res.msg)
+                //关闭websocket连接
                 listWs.close(1000,"closed")
+                //返回登录界面
                 window.location.replace("/")
             }
         })
     })
 
+    //清除输入框
     $('#erase').click(function (){
         console.log("empty")
         $("#text").val("");
     })
+
 })

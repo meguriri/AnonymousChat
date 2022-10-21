@@ -8,7 +8,7 @@ $(document).ready(function () {
         $('#123').css("background-color", "rgb("+String(c1)+","+String(c2)+","+String(c3)+")")
     })
 
-    //
+    //获取在线人数
     $('#onlineusers').each(function (){
         $.ajax({
             type: 'get',
@@ -20,9 +20,10 @@ $(document).ready(function () {
         })
     })
 
-
+    //用户登录
     $('#submit').click(function (){
         console.log("click..")
+        //用户对象
         let user ={
             nickname: $('#nicknameinput').val(),
             gender: Number($("input[type='radio']:checked").val()),
@@ -32,7 +33,9 @@ $(document).ready(function () {
                 parseInt($('#c3').val())
             ]
         }
+
         let json=JSON.stringify(user)
+
         $.ajax({
             type: 'post',
             url: '/login',
@@ -44,4 +47,5 @@ $(document).ready(function () {
             }
         })
     })
+
 })
