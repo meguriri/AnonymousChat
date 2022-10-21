@@ -24,7 +24,8 @@ func main() {
 	handler.Manager.InitManager()
 
 	//开启一个协程管理websocket连接
-	go handler.WebsocketManange()
+	go handler.Manager.Managed()
+	//go handler.WebsocketManange()
 
 	//初始化路由器
 	r := router.InitRouter()

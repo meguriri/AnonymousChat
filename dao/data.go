@@ -2,6 +2,7 @@ package dao
 
 var (
 	MaxUser int
+	//NowUser int
 )
 
 type User struct {
@@ -22,6 +23,6 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-var UserList []User
+//var UserList []User
 
-var BroadcastChan = make(chan Message, 10000)
+//var BroadcastChan = make(chan Message, 10000)
