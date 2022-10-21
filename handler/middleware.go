@@ -12,7 +12,6 @@ func AuthMiddle() gin.HandlerFunc {
 		var user dao.User
 		//获取前端用户信息
 		c.ShouldBindJSON(&user)
-		fmt.Println("middle: ", user)
 		if user.Nickname == "1" {
 			c.Abort()
 			fmt.Println("err!!!!!")
