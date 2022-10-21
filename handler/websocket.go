@@ -46,7 +46,7 @@ func ReciveMsg() gin.HandlerFunc {
 		fmt.Println("re cookie:", sid)
 		client := &dao.Client{
 			Id:          sid,
-			Socket:      conn,
+			Conn:        conn,
 			MessageChan: make(chan dao.Message, 1024),
 		}
 		fmt.Println("re client:", client)
