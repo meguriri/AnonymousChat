@@ -28,13 +28,14 @@ func (c *Client) ClientHandler() {
 
 		case msg := <-c.MessageChan: //读取消息
 			fmt.Println(msg)
+			c.MConn.WriteJSON(msg)
 
 		case <-c.LogoutSignal: //下线
 			close(c.MessageChan)
 			close(c.LogoutSignal)
 			close(c.UserListSignal)
 			c.LConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-			//c.MConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+			c.MConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 			return
 		}
 	}

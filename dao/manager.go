@@ -43,13 +43,12 @@ func (m *Manager) ClientRegist(sid string, user *User) {
 		LConn:          nil,
 		MConn:          nil,
 		UserPtr:        user,
-		MessageChan:    make(chan Message, 10),
+		MessageChan:    make(chan Message, 1024),
 		UserListSignal: make(chan struct{}),
 		LogoutSignal:   make(chan struct{}),
 	}
 	//注册
 	m.Register <- client
-	fmt.Println("ClientRegist okk")
 }
 
 func (m *Manager) ClientUnRegist(sid string) {

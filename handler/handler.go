@@ -84,6 +84,7 @@ func GetChatroom() gin.HandlerFunc {
 //获取用户列表
 func GetUserList() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		fmt.Println("start user list websocket")
 		//获取客户端
 		sid, _ := c.Cookie("login")
 		client := dao.MyManager.GetClient(sid)
@@ -91,7 +92,7 @@ func GetUserList() gin.HandlerFunc {
 		//http升级为websocket协议
 		var upgrader = websocket.Upgrader{}
 
-		//获取一个conn实例
+		//绑定客户端LConn
 		client.LConn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
 
 		//发送获取初始用户列表
@@ -99,11 +100,10 @@ func GetUserList() gin.HandlerFunc {
 		if err != nil {
 			fmt.Println("origin list error", err)
 		}
-		//client.UserListSignal <- struct{}{}
-
 	}
 }
 
+//用户下线
 func Offline() gin.HandlerFunc {
 	return func(c *gin.Context) {
 

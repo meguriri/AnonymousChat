@@ -11,49 +11,51 @@ import (
 
 func SendMsg() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		//获取信息：消息内容，发送人
+		//获取session
 		sid, _ := c.Cookie("login")
 		s, _ := dao.Get(sid)
+
+		//绑定user
 		var user dao.User
 		if err := json.Unmarshal(s, &user); err != nil {
-			fmt.Println("json err: ", err)
+			fmt.Println("json unmarshal err: ", err)
 		}
+
+		//定义消息实例
 		var message = dao.Message{
 			SendUser: user,
 			SendTime: c.PostForm("sendtime"),
 			Content:  c.PostForm("content"),
 		}
+
+		//将消息放入广播器
+		dao.MyManager.BroadCastChan <- message
+
+		//消息存入redis
 		//msg,_:=json.Marshal(message)
 		//fmt.Println("msg:",string(msg))
-		dao.MyManager.BroadCastChan <- message
 		//redis<-msgs
+
 		c.JSON(http.StatusOK, gin.H{
-			"msg": "send ok",
+			"user": string(s),
+			"msg":  "send ok",
 		})
 	}
 }
 
 func ReciveMsg() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("recive!")
-		var upgrader = websocket.Upgrader{}
-		var conn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
+		fmt.Println("start message receive websocket")
+
+		//获取客户端
 		sid, _ := c.Cookie("login")
-		fmt.Println("re cookie:", sid)
-		client := &dao.Client{
-			Id:          sid,
-			MConn:       conn,
-			MessageChan: make(chan dao.Message, 1024),
-		}
-		fmt.Println("re client:", client)
-		dao.MyManager.Register <- client
-		go func(conn *websocket.Conn) {
-			for {
-				select {
-				case data := <-client.MessageChan:
-					conn.WriteJSON(data)
-				}
-			}
-		}(conn)
+		client := dao.MyManager.GetClient(sid)
+
+		//http升级为websocket协议
+		var upgrader = websocket.Upgrader{}
+
+		//绑定客户端MConn
+		client.MConn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
+
 	}
 }

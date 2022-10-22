@@ -16,11 +16,9 @@ type User struct {
 
 type Message struct {
 	//发送用户
-	SendUser User
+	SendUser User `json:"senduser"`
 	//发送时间
 	SendTime string `json:"sendtime"`
 	//内容
 	Content string `json:"content"`
 }
-
-//var BroadcastChan = make(chan Message, 10000)

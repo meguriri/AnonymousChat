@@ -24,7 +24,6 @@ func InitRouter() *gin.Engine {
 		chatroom.GET("/offline", h.Offline())      //下线
 		chatroom.GET("/userlist", h.GetUserList()) //在线列表
 		chatroom.POST("/send", h.SendMsg())        //发送消息
-		chatroom.POST("/send", h.SendMsg())        //发送消息
 		chatroom.GET("/recive", h.ReciveMsg())     //接受消息
 	}
 	return r
