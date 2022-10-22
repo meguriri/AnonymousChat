@@ -1,8 +1,8 @@
 package dao
 
 var (
-	MaxUser int
-	//NowUser int
+	MaxUser   int
+	MyManager Manager
 )
 
 type User struct {
@@ -22,7 +22,5 @@ type Message struct {
 	//内容
 	Content string `json:"content"`
 }
-
-//var UserList []User
 
 //var BroadcastChan = make(chan Message, 10000)

@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/meguriri/AnonymousChat/config"
-	"github.com/meguriri/AnonymousChat/handler"
+	"github.com/meguriri/AnonymousChat/dao"
 	"github.com/meguriri/AnonymousChat/redis"
 	"github.com/meguriri/AnonymousChat/router"
 )
@@ -21,11 +21,10 @@ func main() {
 	}
 
 	//初始化管理器
-	handler.Manager.InitManager()
+	dao.MyManager.InitManager()
 
 	//开启一个协程管理websocket连接
-	go handler.Manager.Managed()
-	//go handler.WebsocketManange()
+	go dao.MyManager.Managed()
 
 	//初始化路由器
 	r := router.InitRouter()
