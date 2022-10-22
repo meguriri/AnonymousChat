@@ -63,6 +63,8 @@ $(document).ready(function () {
     //消息的websocket收到消息时
     RevWs.onmessage = function(e){
         console.log("get message: "+e.data)
+        let message=JSON.parse(e.data)
+        $('#receive').append("<p>"+message.senduser.nickname+": "+message.sendtime+" "+message.content+"</p>")
     }
 
     //消息的websocket关闭时
@@ -84,8 +86,10 @@ $(document).ready(function () {
             data:message,
             url: '/chatroom/send',
                 success: function (res) {
-                $('#send').append("<p>"+message.sendtime+" "+message.content+"</p>")
-                console.log(res.msg)
+                console.log(res)
+                let user =JSON.parse(res.user)
+                $('#send').append("<p>"+user.nickname+": "+message.sendtime+" "+message.content+"</p>")
+                $("#text").val("")
             }
         })
     })
@@ -97,8 +101,6 @@ $(document).ready(function () {
             url: '/chatroom/offline',
             success: function (res) {
                 console.log(res.msg)
-                //关闭websocket连接
-                listWs.close(1000,"closed")
                 //返回登录界面
                 window.location.replace("/")
             }
@@ -108,7 +110,7 @@ $(document).ready(function () {
     //清除输入框
     $('#erase').click(function (){
         console.log("empty")
-        $("#text").val("");
+        $("#text").val("")
     })
 
 })
