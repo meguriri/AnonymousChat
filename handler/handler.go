@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/meguriri/AnonymousChat/dao"
+	"github.com/meguriri/AnonymousChat/logic"
 	"net/http"
 )
 
@@ -50,26 +51,33 @@ func Login() gin.HandlerFunc {
 		ss, ok := c.Get("user")
 		if ok {
 			user := ss.(dao.User)
-			fmt.Println("Login: ", user)
 
-			//生成session
-			s, _ := json.Marshal(user)
-			session := dao.Session{Message: string(s), MaxLifetime: dao.MaxLifetime}
+			//验证重名
+			if logic.CheckDup(user.Nickname) {
+				//生成session
+				s, _ := json.Marshal(user)
+				session := dao.Session{Message: string(s), MaxLifetime: dao.MaxLifetime}
 
-			//生成session id
-			sid, err := session.Set()
-			if err != nil {
-				fmt.Println("session set error", err)
+				//生成session id
+				sid, err := session.Set()
+				if err != nil {
+					fmt.Println("session set error", err)
+				}
+
+				//注册客户端
+				dao.MyManager.ClientRegister(sid, &user)
+
+				//生成cookie
+				c.SetCookie("login", sid, int(session.MaxLifetime/1e9), "/", "localhost", false, false)
+				c.JSON(http.StatusOK, gin.H{
+					"msg": "ok",
+				})
+			} else {
+				c.JSON(http.StatusOK, gin.H{
+					"msg": "error",
+				})
 			}
 
-			//注册客户端
-			dao.MyManager.ClientRegist(sid, &user)
-
-			//生成cookie
-			c.SetCookie("login", sid, int(session.MaxLifetime/1e9), "/", "localhost", false, false)
-			c.JSON(http.StatusOK, gin.H{
-				"msg": "ok",
-			})
 		}
 	}
 }
@@ -109,10 +117,9 @@ func Offline() gin.HandlerFunc {
 
 		//获取sid
 		sid, _ := c.Cookie("login")
-		fmt.Println("cookie: ", sid)
 
 		//注销客户端
-		dao.MyManager.ClientUnRegist(sid)
+		dao.MyManager.ClientUnRegister(sid)
 
 		//redis中删除session
 		if err := dao.Del(sid); err != nil {

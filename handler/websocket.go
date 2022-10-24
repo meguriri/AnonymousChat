@@ -28,13 +28,16 @@ func SendMsg() gin.HandlerFunc {
 			Content:  c.PostForm("content"),
 		}
 
+		//发送心跳
+		client := dao.MyManager.GetClient(sid)
+		client.HeartBeat <- struct{}{}
+
 		//将消息放入广播器
 		dao.MyManager.BroadCastChan <- message
 
 		//消息存入redis
 		//msg,_:=json.Marshal(message)
 		//fmt.Println("msg:",string(msg))
-		//redis<-msgs
 
 		c.JSON(http.StatusOK, gin.H{
 			"user": string(s),

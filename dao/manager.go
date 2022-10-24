@@ -3,6 +3,7 @@ package dao
 import (
 	"fmt"
 	"sync"
+	"time"
 )
 
 type Manager struct {
@@ -13,22 +14,22 @@ type Manager struct {
 	ClientCount          uint               //客户端数量
 }
 
-func (m *Manager) InitManager() {
+func (m *Manager) InitManager() { //初始化管理器
 	m.Register = make(chan *Client)
 	m.UnRegister = make(chan *Client)
 	m.BroadCastChan = make(chan Message, 10000)
 	m.Group = make(map[string]*Client, 1000)
 }
 
-func (m *Manager) GetClient(sid string) *Client {
+func (m *Manager) GetClient(sid string) *Client { //获取客户端
 	return m.Group[sid]
 }
 
-func (m *Manager) GetUserNumber() uint {
+func (m *Manager) GetUserNumber() uint { //获取用户人数
 	return m.ClientCount
 }
 
-func (m *Manager) GetUserList() []User {
+func (m *Manager) GetUserList() []User { //获取用户列表
 	userList := make([]User, 0, MaxUser)
 	for _, v := range m.Group {
 		userList = append(userList, *v.UserPtr)
@@ -36,7 +37,7 @@ func (m *Manager) GetUserList() []User {
 	return userList
 }
 
-func (m *Manager) ClientRegist(sid string, user *User) {
+func (m *Manager) ClientRegister(sid string, user *User) { //注册客户端
 	//创建新的客户端
 	client := &Client{
 		Id:             sid,
@@ -46,16 +47,30 @@ func (m *Manager) ClientRegist(sid string, user *User) {
 		MessageChan:    make(chan Message, 1024),
 		UserListSignal: make(chan struct{}),
 		LogoutSignal:   make(chan struct{}),
+		HeartBeatTime:  time.Now().Add(time.Duration(MaxLifetime)),
+		HeartBeat:      make(chan struct{}),
 	}
 	//注册
 	m.Register <- client
 }
 
-func (m *Manager) ClientUnRegist(sid string) {
+func (m *Manager) ClientUnRegister(sid string) { //注销客户端
 	m.UnRegister <- m.Group[sid]
 }
 
-func (m *Manager) Managed() {
+func (m *Manager) DeleteClient(client *Client) { //删除客户端
+	m.Lock.Lock()
+	if _, ok := m.Group[client.Id]; ok {
+		//删除分组中客户端
+		delete(m.Group, client.Id)
+		//客户端数量减1
+		m.ClientCount--
+		fmt.Printf("客户端注销: 客户端id为%s\n", client.Id)
+	}
+	m.Lock.Unlock()
+}
+
+func (m *Manager) Managed() { //管理
 	for {
 		select {
 		case client := <-m.Register:
@@ -80,18 +95,12 @@ func (m *Manager) Managed() {
 
 		case client := <-m.UnRegister:
 			fmt.Println("a client will leave")
+
 			//注销客户端
-			m.Lock.Lock()
-			if _, ok := m.Group[client.Id]; ok {
-				//向客户端handler发送注销信号
-				client.LogoutSignal <- struct{}{}
-				//删除分组中客户端
-				delete(m.Group, client.Id)
-				//客户端数量减1
-				m.ClientCount--
-				fmt.Printf("客户端注销: 客户端id为%s\n", client.Id)
-			}
-			m.Lock.Unlock()
+			m.DeleteClient(client)
+
+			//向客户端handler发送注销信号
+			client.LogoutSignal <- struct{}{}
 
 			//向所有客户端通知更新用户列表
 			for _, v := range m.Group {
