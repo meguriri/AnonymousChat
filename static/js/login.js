@@ -33,19 +33,26 @@ $(document).ready(function () {
                 parseInt($('#c3').val())
             ]
         }
-
-        let json=JSON.stringify(user)
-
-        $.ajax({
-            type: 'post',
-            url: '/login',
-            dataType: 'json',
-            data: json,
-            success: function (res) {
-                console.log(res.msg)
-                window.location.replace("/chatroom/")
-            }
-        })
+        if(user.nickname.length>10||user.nickname.length<1){
+            $('#nicknameinput').val("")
+            window.alert("输入昵称不规范，请重新输入昵称！")
+        }else{
+            let json=JSON.stringify(user)
+            $.ajax({
+                type: 'post',
+                url: '/login',
+                dataType: 'json',
+                data: json,
+                success: function (res) {
+                    if(res.msg==="ok"){
+                        window.location.replace("/chatroom/")
+                    }else{
+                        $('#nicknameinput').val("")
+                        window.alert("该名称已被使用，请重新输入昵称！")
+                    }
+                }
+            })
+        }
     })
 
 })
