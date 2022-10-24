@@ -1,9 +1,9 @@
 //获取当前时间
 function getcurTime() {
-    var Digital=new Date();
-    var hours=Digital.getHours();
-    var minutes=Digital.getMinutes();
-    var seconds=Digital.getSeconds();
+    let Digital=new Date();
+    let hours=Digital.getHours();
+    let minutes=Digital.getMinutes();
+    let seconds=Digital.getSeconds();
     if(minutes<=9){
         minutes="0"+minutes;
     }if(seconds<=9){
@@ -50,6 +50,8 @@ $(document).ready(function () {
     //用户列表的websocket关闭时
     listWs.onclose=function (){
         console.log("userlist disconnected")
+        // $.removeCookie('login', { path: '/' })
+        // window.location.replace("/")
     }
 
     //创建消息的websocket连接
@@ -57,6 +59,7 @@ $(document).ready(function () {
 
     //消息的websocket建立连接时
     RevWs.onopen=function(){
+        window.alert("欢迎来到匿名聊天室，注意文明用语。（注意：超过10分钟未发送消息将会自动踢出聊天室！！！）")
         console.log("Receive connected");
     }
 
@@ -69,7 +72,9 @@ $(document).ready(function () {
 
     //消息的websocket关闭时
     RevWs.onclose=function (){
-        console.log("Receive disconnected");
+        console.log("Receive disconnected")
+        $.removeCookie('login', { path: '/' })
+        window.location.replace("/")
     }
 
     //发送信息
@@ -101,8 +106,6 @@ $(document).ready(function () {
             url: '/chatroom/offline',
             success: function (res) {
                 console.log(res.msg)
-                //返回登录界面
-                window.location.replace("/")
             }
         })
     })
