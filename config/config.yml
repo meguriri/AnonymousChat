@@ -10,4 +10,4 @@ server:
   maxuser: 1000
 
 session:
-  maxlifetime: 100000000000
+  maxlifetime: 600000000000
