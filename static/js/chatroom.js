@@ -12,15 +12,16 @@ function getcurTime() {
     myclock=hours+":"+minutes+":"+seconds;
     return myclock;
 }
-
+var listWs
+var RevWs
 $(document).ready(function () {
-
     //创建用户列表的websocket连接
-    listWs = new WebSocket("ws://localhost:5050/chatroom/userlist")
+    listWs = new WebSocket("ws://192.168.31.177:5050/chatroom/userlist")
 
     //用户列表的websocket建立连接时
     listWs.onopen=function(){
         console.log("userlist connected");
+        alert("userlist connected")
     }
 
     //用户列表的websocket收到消息时
@@ -55,12 +56,13 @@ $(document).ready(function () {
     }
 
     //创建消息的websocket连接
-    RevWs = new WebSocket("ws://localhost:5050/chatroom/recive")
+    RevWs = new WebSocket("ws://192.168.31.177:5050/chatroom/recive")
 
     //消息的websocket建立连接时
     RevWs.onopen=function(){
         window.alert("欢迎来到匿名聊天室，注意文明用语。（注意：超过10分钟未发送消息将会自动踢出聊天室！！！）")
         console.log("Receive connected");
+        alert("Receive connected")
     }
 
     //消息的websocket收到消息时
@@ -74,6 +76,7 @@ $(document).ready(function () {
     RevWs.onclose=function (){
         console.log("Receive disconnected")
         $.removeCookie('login', { path: '/' })
+        alert("由于您长时间未发送消息，系统自动下线。请重新登录！")
         window.location.replace("/")
     }
 

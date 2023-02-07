@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/meguriri/AnonymousChat/dao"
@@ -68,7 +69,7 @@ func Login() gin.HandlerFunc {
 				dao.MyManager.ClientRegister(sid, &user)
 
 				//生成cookie
-				c.SetCookie("login", sid, int(session.MaxLifetime/1e9), "/", "localhost", false, false)
+				c.SetCookie("login", sid, int(session.MaxLifetime/1e9), "/", "", false, false)
 				c.JSON(http.StatusOK, gin.H{
 					"msg": "ok",
 				})
@@ -97,16 +98,23 @@ func GetUserList() gin.HandlerFunc {
 		sid, _ := c.Cookie("login")
 		client := dao.MyManager.GetClient(sid)
 
+		fmt.Printf("[handler.GetUserList] %v sid: %v\n", client, sid)
+
 		//http升级为websocket协议
 		var upgrader = websocket.Upgrader{}
-
 		//绑定客户端LConn
-		client.LConn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
-
+		var connErr error
+		client.LConn, connErr = upgrader.Upgrade(c.Writer, c.Request, nil)
+		if connErr != nil {
+			log.Printf("[handler.GetUserList error] %v upgrade err: %v\n", c.ClientIP(), connErr.Error())
+			return
+		}
+		log.Printf("[handler.GetUserList] %v upgrade is ok\n", c.ClientIP())
 		//发送获取初始用户列表
 		err := client.LConn.WriteJSON(dao.MyManager.GetUserList())
 		if err != nil {
 			log.Printf("[handler.GetUserList error] %v origin list err: %v\n", c.ClientIP(), err.Error())
+			return
 		}
 	}
 }

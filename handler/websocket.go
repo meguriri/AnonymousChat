@@ -58,7 +58,12 @@ func ReciveMsg() gin.HandlerFunc {
 		var upgrader = websocket.Upgrader{}
 
 		//绑定客户端MConn
+		var connErr error
 		client.MConn, _ = upgrader.Upgrade(c.Writer, c.Request, nil)
-
+		if connErr != nil {
+			log.Printf("[websocket.ReciveMsg error] %v upgrade err: %v\n", c.ClientIP(), connErr.Error())
+			return
+		}
+		log.Printf("[websocket.ReciveMsg] %v upgrade is ok\n", c.ClientIP())
 	}
 }
