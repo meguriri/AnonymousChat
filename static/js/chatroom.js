@@ -67,7 +67,19 @@ $(document).ready(function () {
     RevWs.onmessage = function(e){
         console.log("get message: "+e.data)
         let message=JSON.parse(e.data)
-        $('#receive').append("<p>"+message.senduser.nickname+": "+message.sendtime+" "+message.content+"</p>")
+        let gender=''
+        if(message.senduser.gender==0){
+            gender=' ♂ '
+        }else{
+            gender=' ♀ '
+        }
+        $('#receive').append('<li class="my-1 border-0 list-group-item d-flex p-1">\n' +
+            '        <span class="p-1 rounded-circle text-white text-center" style="width: 40px;height: 40px;' +
+            'background-color: rgb('+message.senduser.color[0]+','+message.senduser.color[1]+','+message.senduser.color[2]+')"><i\n' +
+            '            class="bi bi-person"></i> </span>\n' +
+            '        <p class="mx-1 text-black-50">'+message.senduser.nickname+gender+'️</p>\n' +
+            '    </li>'+message.sendtime+"    "+message.content)
+        //$('#receive').append("<p>"+message.senduser.nickname+": "+message.sendtime+" "+message.content+"</p>")
     }
 
     //消息的websocket关闭时
@@ -91,10 +103,24 @@ $(document).ready(function () {
             dataType:'json',
             data:message,
             url: '/chatroom/send',
-                success: function (res) {
+            success: function (res) {
                 console.log(res)
                 let user =JSON.parse(res.user)
-                $('#send').append("<p>"+user.nickname+": "+message.sendtime+" "+message.content+"</p>")
+
+                let gender=''
+                if(user.gender==0){
+                    gender=' ♂ '
+                }else{
+                    gender=' ♀ '
+                }
+                $('#send').append(message.sendtime+"    "+message.content+'<li class="my-1 border-0 list-group-item d-flex p-1">\n' +
+                    '        <span class="p-1 rounded-circle text-white text-center" style="width: 40px;height: 40px;' +
+                    'background-color: rgb('+user.color[0]+','+user.color[1]+','+user.color[2]+')"><i\n' +
+                    '            class="bi bi-person"></i> </span>\n' +
+                    '        <p class="mx-1 text-black-50">'+user.nickname+gender+'️</p>\n' +
+                    '    </li>')
+
+                //$('#send').append("<p>"+user.nickname+": "+message.sendtime+" "+message.content+"</p>")
                 $("#text").val("")
             }
         })
@@ -107,6 +133,8 @@ $(document).ready(function () {
             url: '/chatroom/offline',
             success: function (res) {
                 console.log(res.msg)
+                $.removeCookie('login', { path: '/' })
+                window.location.replace("/")
             }
         })
     })
