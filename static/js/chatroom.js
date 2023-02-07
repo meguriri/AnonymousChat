@@ -21,7 +21,6 @@ $(document).ready(function () {
     //用户列表的websocket建立连接时
     listWs.onopen=function(){
         console.log("userlist connected");
-        alert("userlist connected")
     }
 
     //用户列表的websocket收到消息时
@@ -62,7 +61,6 @@ $(document).ready(function () {
     RevWs.onopen=function(){
         window.alert("欢迎来到匿名聊天室，注意文明用语。（注意：超过10分钟未发送消息将会自动踢出聊天室！！！）")
         console.log("Receive connected");
-        alert("Receive connected")
     }
 
     //消息的websocket收到消息时
