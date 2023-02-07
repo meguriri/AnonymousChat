@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"fmt"
 	"github.com/gorilla/websocket"
+	"log"
 	"time"
 )
 
@@ -25,7 +25,7 @@ func (c *Client) OffLine() {
 	close(c.UserListSignal)
 	c.LConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
 	c.MConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
-	fmt.Println("xia xian")
+	log.Printf("[client.Offine] %s has offlined\n", c.Id)
 }
 
 func (c *Client) ClientHandler() {
@@ -33,18 +33,18 @@ func (c *Client) ClientHandler() {
 	for {
 		select {
 		case <-c.UserListSignal: //用户列表更新
-			fmt.Println(c.Id, " user list changed")
+			log.Printf("[client.ClientHandler] %s's userList has changed\n", c.Id)
 			err := c.LConn.WriteJSON(MyManager.GetUserList())
 			if err != nil {
-				fmt.Println(err)
+				log.Printf("[client.ClientHandler error] %s writeJSON error: %v\n", c.Id, err.Error())
 			}
 
 		case <-c.HeartBeat: //心跳
-			fmt.Println(c.Id, " heartbeat ", time.Now())
+			log.Printf("[client.ClientHandler] %s beated %v\n", c.Id, time.Now())
 			c.HeartBeatTime = time.Now().Add(time.Duration(1e9 * 20))
 
 		case msg := <-c.MessageChan: //读取消息
-			fmt.Println(msg)
+			log.Printf("[client.ClientHandler] %s get message %v\n", c.Id, msg)
 			c.MConn.WriteJSON(msg)
 
 		case <-c.LogoutSignal: //下线
@@ -52,12 +52,12 @@ func (c *Client) ClientHandler() {
 			return
 
 		case <-time.After(time.Until(c.HeartBeatTime)): //心跳
-			fmt.Println(c.Id, " is death ", time.Now())
+			log.Printf("[client.ClientHandler] %s is death %v\n", c.Id, time.Now())
 			//删除客户端
 			MyManager.DeleteClient(c)
 			//redis中删除session
 			if err := Del(c.Id); err != nil {
-				fmt.Println(err)
+				log.Printf("[client.ClientHandler error] %s delete session error: %v\n", c.Id, err.Error())
 			}
 			//下线
 			c.OffLine()

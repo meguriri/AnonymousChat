@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"github.com/meguriri/AnonymousChat/dao"
 	"github.com/meguriri/AnonymousChat/redis"
 	"github.com/meguriri/AnonymousChat/router"
@@ -23,7 +22,5 @@ func Configinit() error {
 	router.Port = viper.GetString("server.router.port")
 	dao.MaxUser = viper.GetInt("server.maxuser")
 	dao.MaxLifetime = viper.GetInt64("session.maxlifetime")
-
-	fmt.Println(dao.MaxLifetime)
 	return nil
 }

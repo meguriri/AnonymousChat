@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/meguriri/AnonymousChat/dao"
+	"log"
 	"net/http"
 )
 
@@ -12,9 +12,9 @@ func AuthMiddle() gin.HandlerFunc {
 		var user dao.User
 		//获取前端用户信息
 		c.ShouldBindJSON(&user)
-		if user.Nickname == "1" {
+		if user.Nickname == "" {
 			c.Abort()
-			fmt.Println("err!!!!!")
+			log.Printf("[middleware.AuthMiddle error] %v user nickname err\n", c.ClientIP())
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "err"})
 			return
 		}

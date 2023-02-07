@@ -1,23 +1,24 @@
 package main
 
 import (
-	"fmt"
 	"github.com/meguriri/AnonymousChat/config"
 	"github.com/meguriri/AnonymousChat/dao"
 	"github.com/meguriri/AnonymousChat/redis"
 	"github.com/meguriri/AnonymousChat/router"
+	"log"
 )
 
 func main() {
 	//读取配置文件
-	err := config.Configinit()
-	if err != nil {
-		fmt.Println("viper err:", err.Error())
+	if err := config.Configinit(); err != nil {
+		log.Printf("[config.Configinit error] viper err: %v\n", err.Error())
+		return
 	}
 
 	//初始化redis
 	if err := redis.InitClient(); err != nil {
-		fmt.Println(err.Error())
+		log.Printf("[redis.InitClient error] redis connect err: %v\n", err.Error())
+		return
 	}
 
 	//初始化管理器

@@ -2,22 +2,22 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/meguriri/AnonymousChat/dao"
 	"github.com/meguriri/AnonymousChat/logic"
+	"log"
 	"net/http"
 )
 
-//获取index.html
+// 获取index.html
 func GetIndex() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//获取login cookie中的sid
 		sid, err := c.Cookie("login")
 		//无cookie
 		if err != nil {
-			fmt.Println("no cookie")
+			log.Printf("[handler.GetIndex error] %v no cookie err: %v\n", c.ClientIP(), err.Error())
 			//返回index.html
 			c.HTML(http.StatusOK, "index.html", nil)
 		} else { //有cookie
@@ -34,7 +34,7 @@ func GetIndex() gin.HandlerFunc {
 	}
 }
 
-//获取在线人数
+// 获取在线人数
 func GetOnlineUsers() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//返回在线人数
@@ -44,7 +44,7 @@ func GetOnlineUsers() gin.HandlerFunc {
 	}
 }
 
-//注册用户
+// 注册用户
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//从context中获取user内容，空接口
@@ -61,7 +61,7 @@ func Login() gin.HandlerFunc {
 				//生成session id
 				sid, err := session.Set()
 				if err != nil {
-					fmt.Println("session set error", err)
+					log.Printf("[handler.Login error] %v session set err: %v\n", c.ClientIP(), err.Error())
 				}
 
 				//注册客户端
@@ -82,17 +82,17 @@ func Login() gin.HandlerFunc {
 	}
 }
 
-//获取chatroom.html
+// 获取chatroom.html
 func GetChatroom() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.HTML(http.StatusOK, "chatroom.html", nil)
 	}
 }
 
-//获取用户列表
+// 获取用户列表
 func GetUserList() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("start user list websocket")
+		log.Printf("[handler.GetUserList] %v start user list websocket\n", c.ClientIP())
 		//获取客户端
 		sid, _ := c.Cookie("login")
 		client := dao.MyManager.GetClient(sid)
@@ -106,15 +106,14 @@ func GetUserList() gin.HandlerFunc {
 		//发送获取初始用户列表
 		err := client.LConn.WriteJSON(dao.MyManager.GetUserList())
 		if err != nil {
-			fmt.Println("origin list error", err)
+			log.Printf("[handler.GetUserList error] %v origin list err: %v\n", c.ClientIP(), err.Error())
 		}
 	}
 }
 
-//用户下线
+// 用户下线
 func Offline() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		//获取sid
 		sid, _ := c.Cookie("login")
 
@@ -123,7 +122,7 @@ func Offline() gin.HandlerFunc {
 
 		//redis中删除session
 		if err := dao.Del(sid); err != nil {
-			fmt.Println(err)
+			log.Printf("[handler.Offline] %v delete session err: %v\n", c.ClientIP(), err.Error())
 		}
 
 		//删除cookie

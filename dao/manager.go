@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"fmt"
+	"log"
 	"sync"
 	"time"
 )
@@ -47,7 +47,7 @@ func (m *Manager) ClientRegister(sid string, user *User) { //注册客户端
 		MessageChan:    make(chan Message, 1024),
 		UserListSignal: make(chan struct{}),
 		LogoutSignal:   make(chan struct{}),
-		HeartBeatTime:  time.Now().Add(time.Duration(MaxLifetime)),
+		HeartBeatTime:  time.Now().Add(time.Duration(MaxLifetime * 10)),
 		HeartBeat:      make(chan struct{}),
 	}
 	//注册
@@ -65,7 +65,7 @@ func (m *Manager) DeleteClient(client *Client) { //删除客户端
 		delete(m.Group, client.Id)
 		//客户端数量减1
 		m.ClientCount--
-		fmt.Printf("客户端注销: 客户端id为%s\n", client.Id)
+		log.Printf("[manager.DeleteClient] clinet unregister: id: %s\n", client.Id)
 	}
 	m.Lock.Unlock()
 }
@@ -74,16 +74,16 @@ func (m *Manager) Managed() { //管理
 	for {
 		select {
 		case client := <-m.Register:
-			fmt.Println("new client is coming")
+			log.Printf("[manager.Managed] a new client  is coming: sid: %v\n", client.Id)
 			//注册客户端
 			m.Lock.Lock()
 			m.Group[client.Id] = client
 			m.ClientCount++
-			fmt.Printf("客户端注册: 客户端sid为%s,用户为%v\n", client.Id, *client.UserPtr)
+			log.Printf("[manager.Managed] client register: sid：%s, user:%v\n", client.Id, *client.UserPtr)
 			m.Lock.Unlock()
 
 			//开启客户端监听协程
-			fmt.Println("start a new ClientHandler")
+			log.Printf("[manager.Managed] %v start a new ClientHandler\n", client.Id)
 			go client.ClientHandler()
 
 			//向除了刚注册的客户端以外的所有客户端通知更新用户列表
@@ -94,7 +94,7 @@ func (m *Manager) Managed() { //管理
 			}
 
 		case client := <-m.UnRegister:
-			fmt.Println("a client will leave")
+			log.Printf("[manager.Managed] %v a client will leave\n", client.Id)
 
 			//注销客户端
 			m.DeleteClient(client)
@@ -111,7 +111,7 @@ func (m *Manager) Managed() { //管理
 			//将数据广播给所有客户端
 			for _, v := range m.Group {
 				if v.UserPtr.Nickname != msg.SendUser.Nickname {
-					fmt.Println(v.Id, msg)
+					log.Println(v.Id, msg)
 					v.MessageChan <- msg
 				}
 			}

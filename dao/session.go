@@ -3,9 +3,9 @@ package dao
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"fmt"
 	"github.com/meguriri/AnonymousChat/redis"
 	"io"
+	"log"
 )
 
 var MaxLifetime int64
@@ -26,7 +26,7 @@ func generateRandomString() string { //生成随机sid
 func (T *Session) Set() (string, error) { //生成session
 	//生成随机sid
 	sid := generateRandomString()
-	fmt.Println("set sid: ", sid)
+	log.Printf("[session.Set] set sid: %v\n", sid)
 	//写入redis
 	err := redis.Rdb.Set(sid, T.Message, 0).Err()
 	if err != nil {
@@ -55,7 +55,7 @@ func Del(sid string) error { //删除session
 }
 
 func Exist(sid string) bool { //判断session是否存在
-	fmt.Println("checking ", sid)
+	log.Printf("[session.Exist] checking %v\n", sid)
 	//从redis中根据sid判断session是否存在
 	ok, _ := redis.Rdb.Exists(sid).Result()
 	if ok == 1 {

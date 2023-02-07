@@ -2,10 +2,10 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/meguriri/AnonymousChat/dao"
+	"log"
 	"net/http"
 )
 
@@ -18,7 +18,7 @@ func SendMsg() gin.HandlerFunc {
 		//绑定user
 		var user dao.User
 		if err := json.Unmarshal(s, &user); err != nil {
-			fmt.Println("json unmarshal err: ", err)
+			log.Printf("[websocket.SendMsg error] %v json unmarshal err: %v\n", c.ClientIP(), err)
 		}
 
 		//定义消息实例
@@ -48,7 +48,7 @@ func SendMsg() gin.HandlerFunc {
 
 func ReciveMsg() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fmt.Println("start message receive websocket")
+		log.Printf("[websocket.ReviveMsg] %v start message receive websocket\n", c.ClientIP())
 
 		//获取客户端
 		sid, _ := c.Cookie("login")
