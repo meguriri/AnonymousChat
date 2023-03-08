@@ -22,5 +22,6 @@ func Configinit() error {
 	router.Port = viper.GetString("server.router.port")
 	dao.MaxUser = viper.GetInt("server.maxuser")
 	dao.MaxLifetime = viper.GetInt64("session.maxlifetime")
+	dao.MaxMessageSave = viper.GetInt("message.maxmessagesave")
 	return nil
 }

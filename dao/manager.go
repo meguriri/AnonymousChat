@@ -1,9 +1,14 @@
 package dao
 
 import (
+	"github.com/meguriri/AnonymousChat/redis"
 	"log"
 	"sync"
 	"time"
+)
+
+var (
+	MyManager Manager
 )
 
 type Manager struct {
@@ -108,8 +113,13 @@ func (m *Manager) Managed() { //管理
 			}
 
 		case msg := <-m.BroadCastChan:
+			//存入redis
+			if err := msg.Save(redis.Rdb); err != nil {
+				log.Printf("[manager.Managed]message save err: %v\n", err.Error())
+			}
 			//将数据广播给所有客户端
 			for _, v := range m.Group {
+				//将消息广播给每个客户端
 				if v.UserPtr.Nickname != msg.SendUser.Nickname {
 					log.Println(v.Id, msg)
 					v.MessageChan <- msg

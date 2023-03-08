@@ -5,9 +5,12 @@ redis:
 
 server:
   router:
-    hostaddress:
+    hostaddress: 192.168.0.153
     port: 5050
   maxuser: 1000
 
 session:
-  maxlifetime: 600000000000
+  maxlifetime: 6000000000000
+
+message:
+  maxmessagesave: 5

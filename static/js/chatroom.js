@@ -12,11 +12,50 @@ function getcurTime() {
     myclock=hours+":"+minutes+":"+seconds;
     return myclock;
 }
+
+function getGender(gender){
+    if(gender===0){
+        return ' ♂ '
+    }
+    return ' ♀ '
+}
+
 var listWs
 var RevWs
 $(document).ready(function () {
+
+    //获取聊天记录功能
+    $.ajax({
+        type: 'get',
+        url: '/chatroom/chats',
+        success: function (res) {
+            console.log(res)
+            for(let i=0;i<res.message.length;i++){
+                let message=res.message[i]
+                console.log(message)
+                let gender=getGender(message.senduser.gender)
+
+                $('#chatroom').append('<div class="row p-1 mb-2">\n' +
+                    '                        <div class="col-1 m-0 p-0">\n' +
+                    '                            <li class="my-1 border-0 list-group-item d-flex">\n' +
+                    '                                <span class=" rounded-circle text-white text-center" style="width: 50px;height: 50px;\n' +
+                    '                                background-color: rgb('+message.senduser.color[0]+','+message.senduser.color[1]+','+message.senduser.color[2]+')"><i class="bi bi-person" style="font-size: 32px;"></i> </span>\n' +
+                    '                            </li>\n' +
+                    '                        </div>\n' +
+                    '                        <div class="col-4 m-0 p-0">\n' +
+                    '                            <h5 class="text-black-50">'+message.senduser.nickname+gender+'   '+message.sendtime+'</h5>\n' +
+                    '                            <div class="p-2 border" style="background-color: rgb(233, 236, 236);display:inline-block; word-break: break-all;word-wrap: break-word;border-radius: 10px;">\n' +
+                    '                                <p style="font-size:20px;letter-spacing: 1px;"><b>'+message.content +
+                    '                                </b></p>\n' +
+                    '                            </div>\n' +
+                    '                        </div>\n' +
+                    '                    </div>')
+            }
+        }
+    })
+
     //创建用户列表的websocket连接
-    listWs = new WebSocket("ws://192.168.31.177:5050/chatroom/userlist")
+    listWs = new WebSocket("ws://192.168.0.153:5050/chatroom/userlist")
 
     //用户列表的websocket建立连接时
     listWs.onopen=function(){
@@ -27,15 +66,10 @@ $(document).ready(function () {
     listWs.onmessage = function(e){
         let user=JSON.parse(e.data)
         let c
-
         $('#listinfo').html("")
         for(i=0;i<user.length;i++){
             console.log(user[i])
-            if(user[i].gender==0){
-                c=' ♂ '
-            }else{
-                c=' ♀ '
-            }
+            c=getGender(user[i].gender)
             $('#listinfo').append(
                 '<li class="my-1 border-0 list-group-item d-flex p-1">\n' +
                 '        <span class="p-1 rounded-circle text-white text-center" style="width: 40px;height: 40px;' +
@@ -55,7 +89,7 @@ $(document).ready(function () {
     }
 
     //创建消息的websocket连接
-    RevWs = new WebSocket("ws://192.168.31.177:5050/chatroom/recive")
+    RevWs = new WebSocket("ws://192.168.0.153:5050/chatroom/recive")
 
     //消息的websocket建立连接时
     RevWs.onopen=function(){
@@ -67,19 +101,21 @@ $(document).ready(function () {
     RevWs.onmessage = function(e){
         console.log("get message: "+e.data)
         let message=JSON.parse(e.data)
-        let gender=''
-        if(message.senduser.gender==0){
-            gender=' ♂ '
-        }else{
-            gender=' ♀ '
-        }
-        $('#receive').append('<li class="my-1 border-0 list-group-item d-flex p-1">\n' +
-            '        <span class="p-1 rounded-circle text-white text-center" style="width: 40px;height: 40px;' +
-            'background-color: rgb('+message.senduser.color[0]+','+message.senduser.color[1]+','+message.senduser.color[2]+')"><i\n' +
-            '            class="bi bi-person"></i> </span>\n' +
-            '        <p class="mx-1 text-black-50">'+message.senduser.nickname+gender+'️</p>\n' +
-            '    </li>'+message.sendtime+"    "+message.content)
-        //$('#receive').append("<p>"+message.senduser.nickname+": "+message.sendtime+" "+message.content+"</p>")
+        let gender=getGender(message.senduser.gender)
+        $('#chatroom').append('<div class="row p-1 mb-2">\n' +
+            '                        <div class="col-1 m-0 p-0">\n' +
+            '                            <li class="my-1 border-0 list-group-item d-flex">\n' +
+            '                                <span class=" rounded-circle text-white text-center" style="width: 50px;height: 50px;\n' +
+            '                                background-color: rgb('+message.senduser.color[0]+','+message.senduser.color[1]+','+message.senduser.color[2]+')"><i class="bi bi-person" style="font-size: 32px;"></i> </span>\n' +
+            '                            </li>\n' +
+            '                        </div>\n' +
+            '                        <div class="col-4 m-0 p-0">\n' +
+            '                            <h5 class="text-black-50" >'+message.senduser.nickname+gender+'   '+message.sendtime+
+            '                            </h5><div class="p-2 border" style="background-color: rgb(233, 236, 236);display:inline-block; word-break: break-all;word-wrap: break-word;border-radius: 10px;">\n' +
+            '                                <p style="font-size:20px;letter-spacing: 1px;"><b>'+message.content+'</b></p>\n' +
+            '                            </div>\n' +
+            '                        </div>\n' +
+            '                    </div>')
     }
 
     //消息的websocket关闭时
@@ -106,21 +142,26 @@ $(document).ready(function () {
             success: function (res) {
                 console.log(res)
                 let user =JSON.parse(res.user)
-
                 let gender=''
                 if(user.gender==0){
                     gender=' ♂ '
                 }else{
                     gender=' ♀ '
                 }
-                $('#send').append(message.sendtime+"    "+message.content+'<li class="my-1 border-0 list-group-item d-flex p-1">\n' +
-                    '        <span class="p-1 rounded-circle text-white text-center" style="width: 40px;height: 40px;' +
-                    'background-color: rgb('+user.color[0]+','+user.color[1]+','+user.color[2]+')"><i\n' +
-                    '            class="bi bi-person"></i> </span>\n' +
-                    '        <p class="mx-1 text-black-50">'+user.nickname+gender+'️</p>\n' +
-                    '    </li>')
-
-                //$('#send').append("<p>"+user.nickname+": "+message.sendtime+" "+message.content+"</p>")
+                $('#chatroom').append('<div class="row p-1 mb-2" >\n' +
+                    '                        <div class="col-4  offset-7">\n' +
+                    '                            <h5 class="text-black-50 " style="text-align:right;">'+user.nickname+gender+'   '+message.sendtime+
+                    '                            </h5><div class="row"><div class="col-6 p-2 ms-auto" style="text-align:right;background-color: rgb(230, 245, 255);display:inline-block; word-break: break-all;word-wrap: break-word;border-radius: 10px;">\n' +
+                    '                                <p style="font-size:20px;letter-spacing: 1px;"><b>'+message.content+'</b></p>\n' +
+                    '                            </div></div>\n' +
+                    '                        </div>\n' +
+                    '                        <div class="col-1 m-0 p-0">\n' +
+                    '                            <li class="my-1 border-0 list-group-item d-flex">\n' +
+                    '                                <span class=" rounded-circle text-white text-center" style="width: 50px;height: 50px;\n' +
+                    '                                background-color: rgb('+user.color[0]+','+user.color[1]+','+user.color[2]+')"><i class="bi bi-person" style="font-size: 32px;"></i> </span>\n' +
+                    '                            </li>\n' +
+                    '                        </div>\n' +
+                    '                    </div>')
                 $("#text").val("")
             }
         })

@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
     //用户头像颜色
     $('#submitcolor').click(function(){
         let c1=$('#c1').val()
@@ -48,7 +47,7 @@ $(document).ready(function () {
                         window.location.replace("/chatroom/")
                     }else{
                         $('#nicknameinput').val("")
-                        window.alert("该名称已被使用，请重新输入昵称！")
+                        window.alert(res.msg)
                     }
                 }
             })

@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/meguriri/AnonymousChat/dao"
 	"github.com/meguriri/AnonymousChat/logic"
+	"github.com/meguriri/AnonymousChat/redis"
 	"log"
 	"net/http"
 )
@@ -48,6 +49,13 @@ func GetOnlineUsers() gin.HandlerFunc {
 // 注册用户
 func Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		nowUsers := dao.MyManager.GetUserNumber()
+		if nowUsers == uint(dao.MaxUser) {
+			c.JSON(http.StatusOK, gin.H{
+				"msg": "当前聊天室人数已满，请稍后重试!",
+			})
+			return
+		}
 		//从context中获取user内容，空接口
 		ss, ok := c.Get("user")
 		if ok {
@@ -75,7 +83,7 @@ func Login() gin.HandlerFunc {
 				})
 			} else {
 				c.JSON(http.StatusOK, gin.H{
-					"msg": "error",
+					"msg": "该名称已被使用，请重新输入昵称!",
 				})
 			}
 
@@ -138,6 +146,24 @@ func Offline() gin.HandlerFunc {
 		//返回信息
 		c.JSON(http.StatusOK, gin.H{
 			"msg": "ok",
+		})
+	}
+}
+
+func GetChatsSave() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		messgaes, err := dao.GetSaveMessage(redis.Rdb)
+		if err != nil {
+			log.Printf("[handler.GetChatSave error] get save messages err: %v\n", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"msg":     "error",
+				"message": nil,
+			})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"msg":     "ok",
+			"message": messgaes,
 		})
 	}
 }
