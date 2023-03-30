@@ -44,7 +44,7 @@ func (c *Client) ClientHandler() {
 		case <-c.HeartBeat: //心跳
 			log.Printf("[client.ClientHandler] %s beated %v\n", c.Id, time.Now())
 			c.HeartBeatTime = time.Now().Add(time.Duration(MaxLifetime))
-			ExpireTime(c.Id, time.Duration(MaxLifetime/1e9))
+			ExpireTime(c.Id, MaxLifetime/1e9)
 			fmt.Println("心跳结束时间：", c.HeartBeatTime)
 
 		case msg := <-c.MessageChan: //读取消息

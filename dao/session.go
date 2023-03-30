@@ -30,18 +30,22 @@ func (T *Session) Set() (string, error) { //生成session
 	sid := generateRandomString()
 	log.Printf("[session.Set] set sid: %v\n", sid)
 	//写入redis
-	err := redis.Rdb.Set(sid, T.Message, time.Duration(T.MaxLifetime/1e9)).Err()
+	err := redis.Rdb.Set(sid, T.Message, 0).Err()
 	if err != nil {
+		return "", err
+	}
+	if ok, err := redis.Rdb.Expire(sid, time.Second*(time.Duration(T.MaxLifetime)/1e9)).Result(); !ok {
+		log.Printf("[session.Set] set expire time err: %v\n", err)
 		return "", err
 	}
 	//返回生成的sid
 	return sid, nil
 }
 
-func ExpireTime(sid string, newTime time.Duration) (bool, error) {
+func ExpireTime(sid string, newTime int64) (bool, error) {
 	var err error
 	var ok bool = false
-	if ok, err = redis.Rdb.Expire(sid, newTime).Result(); ok {
+	if ok, err = redis.Rdb.Expire(sid, time.Second*time.Duration(newTime)).Result(); ok {
 		return ok, nil
 	}
 	return ok, err
