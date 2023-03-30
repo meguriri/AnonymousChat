@@ -1,10 +1,11 @@
 package dao
 
 import (
-	"github.com/meguriri/AnonymousChat/redis"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/meguriri/AnonymousChat/redis"
 )
 
 var (
@@ -13,7 +14,7 @@ var (
 
 type Manager struct {
 	Group                map[string]*Client //客户端列表
-	Lock                 sync.Mutex         //互斥锁
+	Lock                 sync.RWMutex       //读写锁
 	Register, UnRegister chan *Client       //上线，下线通道
 	BroadCastChan        chan Message       //广播通道
 	ClientCount          uint               //客户端数量
@@ -23,7 +24,7 @@ func (m *Manager) InitManager() { //初始化管理器
 	m.Register = make(chan *Client)
 	m.UnRegister = make(chan *Client)
 	m.BroadCastChan = make(chan Message, 10000)
-	m.Group = make(map[string]*Client, 1000)
+	m.Group = make(map[string]*Client, 1024)
 }
 
 func (m *Manager) GetClient(sid string) *Client { //获取客户端
@@ -36,6 +37,8 @@ func (m *Manager) GetUserNumber() uint { //获取用户人数
 
 func (m *Manager) GetUserList() []User { //获取用户列表
 	userList := make([]User, 0, MaxUser)
+	m.Lock.RLock()
+	defer m.Lock.RUnlock()
 	for _, v := range m.Group {
 		userList = append(userList, *v.UserPtr)
 	}
@@ -52,7 +55,7 @@ func (m *Manager) ClientRegister(sid string, user *User) { //注册客户端
 		MessageChan:    make(chan Message, 1024),
 		UserListSignal: make(chan struct{}),
 		LogoutSignal:   make(chan struct{}),
-		HeartBeatTime:  time.Now().Add(time.Duration(MaxLifetime * 10)),
+		HeartBeatTime:  time.Now().Add(time.Duration(MaxLifetime)),
 		HeartBeat:      make(chan struct{}),
 	}
 	//注册
@@ -65,6 +68,7 @@ func (m *Manager) ClientUnRegister(sid string) { //注销客户端
 
 func (m *Manager) DeleteClient(client *Client) { //删除客户端
 	m.Lock.Lock()
+	defer m.Lock.Unlock()
 	if _, ok := m.Group[client.Id]; ok {
 		//删除分组中客户端
 		delete(m.Group, client.Id)
@@ -72,7 +76,6 @@ func (m *Manager) DeleteClient(client *Client) { //删除客户端
 		m.ClientCount--
 		log.Printf("[manager.DeleteClient] clinet unregister: id: %s\n", client.Id)
 	}
-	m.Lock.Unlock()
 }
 
 func (m *Manager) Managed() { //管理

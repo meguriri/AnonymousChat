@@ -3,9 +3,11 @@ package dao
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"github.com/meguriri/AnonymousChat/redis"
 	"io"
 	"log"
+	"time"
+
+	"github.com/meguriri/AnonymousChat/redis"
 )
 
 var MaxLifetime int64
@@ -28,12 +30,21 @@ func (T *Session) Set() (string, error) { //生成session
 	sid := generateRandomString()
 	log.Printf("[session.Set] set sid: %v\n", sid)
 	//写入redis
-	err := redis.Rdb.Set(sid, T.Message, 0).Err()
+	err := redis.Rdb.Set(sid, T.Message, time.Duration(T.MaxLifetime/1e9)).Err()
 	if err != nil {
 		return "", err
 	}
 	//返回生成的sid
 	return sid, nil
+}
+
+func ExpireTime(sid string, newTime time.Duration) (bool, error) {
+	var err error
+	var ok bool = false
+	if ok, err = redis.Rdb.Expire(sid, newTime).Result(); ok {
+		return ok, nil
+	}
+	return ok, err
 }
 
 func Get(sid string) ([]byte, error) { //通过sid获取session
@@ -58,8 +69,5 @@ func Exist(sid string) bool { //判断session是否存在
 	log.Printf("[session.Exist] checking %v\n", sid)
 	//从redis中根据sid判断session是否存在
 	ok, _ := redis.Rdb.Exists(sid).Result()
-	if ok == 1 {
-		return true
-	}
-	return false
+	return ok == 1
 }

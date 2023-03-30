@@ -6,7 +6,6 @@ $(document).ready(function () {
         let c3=$('#c3').val()
         $('#123').css("background-color", "rgb("+String(c1)+","+String(c2)+","+String(c3)+")")
     })
-
     //获取在线人数
     $('#onlineusers').each(function (){
         $.ajax({

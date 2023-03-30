@@ -55,7 +55,7 @@ $(document).ready(function () {
     })
 
     //创建用户列表的websocket连接
-    listWs = new WebSocket("ws://192.168.0.153:5050/chatroom/userlist")
+    listWs = new WebSocket("ws://localhost:5050/chatroom/userlist")
 
     //用户列表的websocket建立连接时
     listWs.onopen=function(){
@@ -89,7 +89,7 @@ $(document).ready(function () {
     }
 
     //创建消息的websocket连接
-    RevWs = new WebSocket("ws://192.168.0.153:5050/chatroom/recive")
+    RevWs = new WebSocket("ws://localhost:5050/chatroom/recive")
 
     //消息的websocket建立连接时
     RevWs.onopen=function(){
@@ -129,9 +129,15 @@ $(document).ready(function () {
     //发送信息
     $('#submit').click(function (){
         //创造message实例
+        let text=$('#text').val().toString()
+        console.log(text)
+        if(text.indexOf("<")!==-1||text.indexOf("</")!==-1||text.indexOf(">")!==-1){
+            alert("不可以插入脚本！")
+            return
+        }
         let message={
             "sendtime":getcurTime(),//发送时间
-            "content":$('#text').val()//内容
+            "content":text//内容
         }
         console.log(message)
         $.ajax({

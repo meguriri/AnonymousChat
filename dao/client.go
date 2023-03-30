@@ -1,9 +1,11 @@
 package dao
 
 import (
-	"github.com/gorilla/websocket"
+	"fmt"
 	"log"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
 
 // Client 客户端
@@ -19,7 +21,7 @@ type Client struct {
 	HeartBeat      chan struct{}   //心跳
 }
 
-func (c *Client) OffLine() {
+func (c *Client) OffLine() { //客户端下线
 	close(c.MessageChan)
 	close(c.LogoutSignal)
 	close(c.UserListSignal)
@@ -42,6 +44,8 @@ func (c *Client) ClientHandler() {
 		case <-c.HeartBeat: //心跳
 			log.Printf("[client.ClientHandler] %s beated %v\n", c.Id, time.Now())
 			c.HeartBeatTime = time.Now().Add(time.Duration(MaxLifetime))
+			ExpireTime(c.Id, time.Duration(MaxLifetime/1e9))
+			fmt.Println("心跳结束时间：", c.HeartBeatTime)
 
 		case msg := <-c.MessageChan: //读取消息
 			log.Printf("[client.ClientHandler] %s get message %v\n", c.Id, msg)
